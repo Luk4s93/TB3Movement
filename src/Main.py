@@ -89,34 +89,35 @@ def checkAngularLimitVelocity(vel):
 # traffic sign detected, do:
 def sign_controls(ros_data):
 
-    sign_vel = 0.0
+    sign_vel = None
     TRAFFIC_SIGN_DETECTED = True
 
     if ros_data == 'entry forbidden':
         sign_vel = checkLinearLimitVelocity(0.0)
     elif ros_data == 'main road':
-        sign_vel = checkLinearLimitVelocity(0.22)
+        sign_vel = checkLinearLimitVelocity(0.11)
     elif ros_data == 'turn right':
         sign_vel = checkLinearLimitVelocity(0.0)
     elif ros_data == 'turn left':
         sign_vel = checkLinearLimitVelocity(0.0)
     elif ros_data == 'pedestrians':
-        sign_vel = checkLinearLimitVelocity(0.11)
+        sign_vel = checkLinearLimitVelocity(0.05)
     elif ros_data == 'warning':
-        sign_vel = checkLinearLimitVelocity(0.11)
+        sign_vel = checkLinearLimitVelocity(0.05)
     elif ros_data == 'no parking':
         sign_vel = checkLinearLimitVelocity(0.0)
     elif ros_data == 'bus stop':
         sign_vel = checkLinearLimitVelocity(0.0)
     elif ros_data == 'crossing':
-        sign_vel = checkLinearLimitVelocity(0.11)
+        sign_vel = checkLinearLimitVelocity(0.05)
     elif ros_data == 'slippery':
-        sign_vel = checkLinearLimitVelocity(0.11)
+        sign_vel = checkLinearLimitVelocity(0.05)
     elif ros_data == 'road closed':
         sign_vel = checkLinearLimitVelocity(0.0)
     else:
         TRAFFIC_SIGN_DETECTED = False
 
+    ''' In Main dafuer sorgen, dass bei 'None' Velocity nicht ueberschrieben wird'''
     return sign_vel
 
 
