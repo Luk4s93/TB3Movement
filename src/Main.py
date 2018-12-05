@@ -138,7 +138,12 @@ class burger_control:
 
     def callback(self, ros_data):
         if ros_data != 'nothing':
-            target_linear_vel = sign_controls(ros_data)
+            # TODO Send velocity to turlebot3
+            move_cmd = Twist()
+            move_cmd.linear.x = sign_controls(ros_data)
+            move_cmd.linear.y = 0.0
+            move_cmd.linear.z = 0.0
+            pub.publish(move_cmd)
 
         rospy.loginfo(ros_data)
 
@@ -167,8 +172,6 @@ if __name__=="__main__":
     except KeyboardInterrupt:
         rospy.loginfo("Shutting down")
         # TODO set velocity to zero
-
-    # TODO Send velocity to turlebot3
 
     '''try:
         print msg
