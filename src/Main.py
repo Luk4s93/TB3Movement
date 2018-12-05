@@ -93,6 +93,8 @@ def sign_controls(ros_data):
     sign_vel = None
     TRAFFIC_SIGN_DETECTED = True
 
+    # TODO change velocity (3 out of 5 hits)
+
     if ros_data == 'entry forbidden':
         sign_vel = checkLinearLimitVelocity(0.0)
     elif ros_data == 'main road':
@@ -118,7 +120,7 @@ def sign_controls(ros_data):
     else:
         TRAFFIC_SIGN_DETECTED = False
 
-    ''' In Main dafuer sorgen, dass bei 'None' Velocity nicht ueberschrieben wird'''
+    # TODO don't change velocity, if message is none
     return sign_vel
 
 #
@@ -132,11 +134,15 @@ class burger_control:
        self.raspi_subscriber = rospy.Subscriber("/traffic_sign/detected", String, self.callback)
        rospy.loginfo("Subscribed to /traffic_sign/detected")
 
+    # TODO Subscibe to line_detection
+
     def callback(self, ros_data):
         if ros_data != 'nothing':
             target_linear_vel = sign_controls(ros_data)
 
         rospy.loginfo(ros_data)
+
+    # TODO Callback line_detection
 
 # Main
 if __name__=="__main__":
@@ -160,6 +166,9 @@ if __name__=="__main__":
         rospy.spin()
     except KeyboardInterrupt:
         rospy.loginfo("Shutting down")
+        # TODO set velocity to zero
+
+    # TODO Send velocity to turlebot3
 
     '''try:
         print msg
@@ -214,4 +223,5 @@ if __name__=="__main__":
         twist.angular.x = 0.0; twist.angular.y = 0.0; twist.angular.z = 0.0
         pub.publish(twist)
     '''
+
     termios.tcsetattr(sys.stdin, termios.TCSADRAIN, settings)
