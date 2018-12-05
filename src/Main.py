@@ -154,6 +154,11 @@ if __name__=="__main__":
 
     control = burger_control()
 
+    try:
+        rospy.spin()
+    except KeyboardInterrupt:
+        rospy.loginfo("Shutting down")
+
     '''try:
         print msg
         while(1):
