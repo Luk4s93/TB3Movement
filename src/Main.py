@@ -130,7 +130,7 @@ def path_control():
 class burger_control:
     def __init__(self):
        self.raspi_subscriber = rospy.Subscriber("/traffic_sign/detected", String, self.callback)
-           rospy.loginfo("Subscribed to /traffic_sign/detected")
+       rospy.loginfo("Subscribed to /traffic_sign/detected")
 
     def callback(self, ros_data):
         if ros_data != 'nothing':
