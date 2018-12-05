@@ -66,6 +66,7 @@ def makeSimpleProfile(output, input, slop):
 
     return output
 
+# check velocity
 def constrain(input, low, high):
     if input < low:
       input = low
@@ -76,12 +77,12 @@ def constrain(input, low, high):
 
     return input
 
-#
+# check linear velocity
 def checkLinearLimitVelocity(vel):
     vel = constrain(vel, -BURGER_MAX_LIN_VEL, BURGER_MAX_LIN_VEL)
     return vel
 
-
+# check angular velocity
 def checkAngularLimitVelocity(vel):
     vel = constrain(vel, -BURGER_MAX_ANG_VEL, BURGER_MAX_ANG_VEL)
     return vel
@@ -120,13 +121,12 @@ def sign_controls(ros_data):
     ''' In Main dafuer sorgen, dass bei 'None' Velocity nicht ueberschrieben wird'''
     return sign_vel
 
-
 #
 def path_control():
     path_ang = 0.0
     return path_ang
 
-
+# Subscribe to traffic_sign & line_detect
 class burger_control:
     def __init__(self):
        self.raspi_subscriber = rospy.Subscriber("/traffic_sign/detected", String, self.callback)
@@ -138,6 +138,7 @@ class burger_control:
 
         rospy.loginfo(ros_data)
 
+# Main
 if __name__=="__main__":
     settings = termios.tcgetattr(sys.stdin)
 
@@ -154,6 +155,7 @@ if __name__=="__main__":
 
     control = burger_control()
 
+# Wait for callback: ( while(1) )
     try:
         rospy.spin()
     except KeyboardInterrupt:
