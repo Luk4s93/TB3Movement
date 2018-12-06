@@ -1,5 +1,6 @@
 <launch>
   <include file="$(find traffic_sign)/launch/traffic_sign.launch"/>
+  <include file="$(find LineFollower)/launch/line.launch"/>
 
   <node name="tb3movement_node" pkg="TB3Movement" type="Main.py" output="screen" />
 </launch>
