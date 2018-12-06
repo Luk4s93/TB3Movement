@@ -130,8 +130,10 @@ def path_control():
 # Subscribe to traffic_sign & line_detect
 class burger_control:
     def __init__(self):
-       self.raspi_subscriber = rospy.Subscriber("/traffic_sign/detected", String, self.callback)
-       rospy.loginfo("Subscribed to /traffic_sign/detected")
+        rospy.init_node('turtlebot3_teleop')
+        self.cmd_vel = rospy.Publisher('cmd_vel_mux/input/navi', Twist, queue_size=10)
+        self.raspi_subscriber = rospy.Subscriber("/traffic_sign/detected", String, self.callback)
+        rospy.loginfo("Subscribed to /traffic_sign/detected")
 
     # TODO Subscibe to line_detection
 
@@ -142,18 +144,16 @@ class burger_control:
             move_cmd.linear.x = sign_controls(ros_data)
             move_cmd.linear.y = 0.0
             move_cmd.linear.z = 0.0
-            pub.publish(move_cmd)
+            self.cmd_vel.publish(move_cmd)
 
         rospy.loginfo(ros_data)
 
     # TODO Callback line_detection
 
-# Main
-if __name__=="__main__":
-    settings = termios.tcgetattr(sys.stdin)
 
-    rospy.init_node('turtlebot3_teleop')
-    pub = rospy.Publisher('cmd_vel', Twist, queue_size=10)
+# Main
+if __name__ == "__main__":
+    settings = termios.tcgetattr(sys.stdin)
 
     turtlebot3_model = rospy.get_param("model", "burger")
 
@@ -173,7 +173,7 @@ if __name__=="__main__":
         stop_turtle.linear.x = 0.0
         stop_turtle.linear.y = 0.0
         stop_turtle.linear.z = 0.0
-        pub.publish(stop_turtle)
+        # pub.publish(stop_turtle)
         rospy.loginfo("Shutting down")
         # TODO set velocity to zero
 
