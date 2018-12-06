@@ -90,7 +90,7 @@ def checkAngularLimitVelocity(vel):
 # traffic sign detected, do:
 def sign_controls(ros_data):
 
-    sign_vel = None
+    sign_vel = 0.0
     TRAFFIC_SIGN_DETECTED = True
 
     # TODO change velocity (3 out of 5 hits)
