@@ -42,6 +42,7 @@ LAST_LIN_VEL = 0.0
 LAST_ANG_VEL = 0.0
 
 TRAFFIC_SIGN_DETECTED = False
+last_velocity = 0.0
 
 msg = """
 TurtleBot3 activated
@@ -90,7 +91,6 @@ def checkAngularLimitVelocity(vel):
 # traffic sign detected, do:
 def sign_controls(ros_data):
 
-    sign_vel = 0.0
     TRAFFIC_SIGN_DETECTED = True
 
     # TODO change velocity (3 out of 5 hits)
@@ -119,6 +119,7 @@ def sign_controls(ros_data):
         sign_vel = 0.0
     else:
         TRAFFIC_SIGN_DETECTED = False
+        sign_vel = last_velocity
 
     return sign_vel
 
