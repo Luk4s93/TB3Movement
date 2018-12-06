@@ -120,7 +120,6 @@ def sign_controls(ros_data):
     else:
         TRAFFIC_SIGN_DETECTED = False
 
-    # TODO don't change velocity, if message is none
     return sign_vel
 
 #
@@ -170,6 +169,11 @@ if __name__=="__main__":
     try:
         rospy.spin()
     except KeyboardInterrupt:
+        stop_turtle = Twist()
+        stop_turtle.linear.x = 0.0
+        stop_turtle.linear.y = 0.0
+        stop_turtle.linear.z = 0.0
+        pub.publish(stop_turtle)
         rospy.loginfo("Shutting down")
         # TODO set velocity to zero
 
