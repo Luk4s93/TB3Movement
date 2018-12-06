@@ -96,27 +96,27 @@ def sign_controls(ros_data):
     # TODO change velocity (3 out of 5 hits)
 
     if ros_data == 'entry forbidden':
-        sign_vel = checkLinearLimitVelocity(0.0)
+        sign_vel = 0.0
     elif ros_data == 'main road':
-        sign_vel = checkLinearLimitVelocity(0.11)
+        sign_vel = 0.11
     elif ros_data == 'turn right':
-        sign_vel = checkLinearLimitVelocity(0.0)
+        sign_vel = 0.0
     elif ros_data == 'turn left':
-        sign_vel = checkLinearLimitVelocity(0.0)
+        sign_vel = 0.0
     elif ros_data == 'pedestrians':
-        sign_vel = checkLinearLimitVelocity(0.05)
+        sign_vel = 0.05
     elif ros_data == 'warning':
-        sign_vel = checkLinearLimitVelocity(0.05)
+        sign_vel = 0.05
     elif ros_data == 'no parking':
-        sign_vel = checkLinearLimitVelocity(0.0)
+        sign_vel = 0.0
     elif ros_data == 'bus stop':
-        sign_vel = checkLinearLimitVelocity(0.0)
+        sign_vel = 0.0
     elif ros_data == 'crossing':
-        sign_vel = checkLinearLimitVelocity(0.05)
+        sign_vel = 0.05
     elif ros_data == 'slippery':
-        sign_vel = checkLinearLimitVelocity(0.05)
+        sign_vel = 0.05
     elif ros_data == 'road closed':
-        sign_vel = checkLinearLimitVelocity(0.0)
+        sign_vel = 0.0
     else:
         TRAFFIC_SIGN_DETECTED = False
 
