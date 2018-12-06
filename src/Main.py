@@ -136,18 +136,13 @@ class burger_control:
         self.raspi_subscriber = rospy.Subscriber("/traffic_sign/detected", String, self.callback)
         rospy.loginfo("Subscribed to /traffic_sign/detected")
 
-        move_cmd = Twist()
-        move_cmd.linear.x = 0.1  # sign_controls(ros_data)
-        move_cmd.angular.z = 0.0
-        self.cmd_vel.publish(move_cmd)
-
     # TODO Subscibe to line_detection
 
     def callback(self, ros_data):
         # if ros_data != 'nothing':
         # TODO Send velocity to turlebot3
         move_cmd = Twist()
-        move_cmd.linear.x = 0.1  # sign_controls(ros_data)
+        move_cmd.linear.x = sign_controls(ros_data)
         move_cmd.angular.z = 0.0
         self.cmd_vel.publish(move_cmd)
 
