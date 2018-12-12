@@ -46,6 +46,8 @@ LAST_ANG_VEL = 0.0
 TRAFFIC_SIGN_DETECTED = False
 last_velocity = 0.0
 
+sign_list = ['nothing', 'nothing', 'nothing', 'nothing', 'nothing']
+
 msg = """
 TurtleBot3 activated
 --------------------
@@ -103,19 +105,19 @@ def sign_controls(ros_data):
 
     # TODO change velocity (3 out of 5 hits)
 
-    if ros_data == "entry forbidden":
+    if ros_data == "entry_forbidden":
         rospy.loginfo("entry_forbidden detected")
         sign_vel = 0.0
         rospy.loginfo("new velocity: ", sign_vel)
-    elif ros_data == "main road":
+    elif ros_data == "main_road":
         rospy.loginfo("main road detected")
         sign_vel = 0.11
         rospy.loginfo("new velocity: ", sign_vel)
-    elif ros_data == "turn right":
+    elif ros_data == "turn_right":
         rospy.loginfo("turn right detected")
         sign_vel = 0.0
         rospy.loginfo("new velocity: ", sign_vel)
-    elif ros_data == "turn left":
+    elif ros_data == "turn_left":
         rospy.loginfo("turn left detected")
         sign_vel = 0.0
         rospy.loginfo("new velocity: ", sign_vel)
@@ -127,11 +129,11 @@ def sign_controls(ros_data):
         rospy.loginfo("warning detected")
         sign_vel = 0.05
         rospy.loginfo("new velocity: ", sign_vel)
-    elif ros_data == "no parking":
+    elif ros_data == "no_parking":
         rospy.loginfo("no parking detected")
         sign_vel = 0.0
         rospy.loginfo("new velocity: ", sign_vel)
-    elif ros_data == "bus stop":
+    elif ros_data == "bus_stop":
         rospy.loginfo("bus stop detected")
         sign_vel = 0.0
         rospy.loginfo("new velocity: ", sign_vel)
@@ -143,7 +145,7 @@ def sign_controls(ros_data):
         rospy.loginfo("slippery detected")
         sign_vel = 0.05
         rospy.loginfo("new velocity: ", sign_vel)
-    elif ros_data == "road closed":
+    elif ros_data == "road_closed":
         rospy.loginfo("road closed detected")
         sign_vel = 0.0
         rospy.loginfo("new velocity: ", sign_vel)
