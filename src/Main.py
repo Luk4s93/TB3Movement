@@ -98,7 +98,6 @@ def checkAngularLimitVelocity(vel):
     return vel
 
 
-
 #
 def path_control():
     path_ang = 0.0
@@ -134,48 +133,52 @@ class burger_control:
         TRAFFIC_SIGN_DETECTED = True
         rospy.loginfo(ros_data.data)
 
-        # TODO change velocity (3 out of 5 hits)
-
-        if ros_data.data == "entry_forbidden":
-            rospy.loginfo("entry_forbidden detected")
-            sign_vel = 0.0
-        elif ros_data.data == "main_road":
-            rospy.loginfo("main road detected")
-            sign_vel = 0.11
-        elif ros_data.data == "turn_right":
-            rospy.loginfo("turn right detected")
-            sign_vel = 0.0
-        elif ros_data.data == "turn_left":
-            rospy.loginfo("turn left detected")
-            sign_vel = 0.0
-        elif ros_data.data == 'pedestrians':
-            rospy.loginfo("pedestrians detected")
-            sign_vel = 0.05
-        elif ros_data.data == "warning":
-            rospy.loginfo("warning detected")
-            sign_vel = 0.05
-        elif ros_data.data == "no_parking":
-            rospy.loginfo("no parking detected")
-            sign_vel = 0.0
-        elif ros_data.data == "bus_stop":
-            rospy.loginfo("bus stop detected")
-            sign_vel = 0.0
-        elif ros_data.data == "crossing":
-            rospy.loginfo("crossing detected")
-            sign_vel = 0.05
-        elif ros_data.data == "slippery":
-            rospy.loginfo("slippery detected")
-            sign_vel = 0.05
-        elif ros_data.data == "road_closed":
-            rospy.loginfo("road closed detected")
-            sign_vel = 0.0
-        else:
-            TRAFFIC_SIGN_DETECTED = False
-            sign_vel = last_velocity
+        sign_list.pop(0)
+        sign_list.append(ros_data)
+        if sign_list.count(ros_data) == 3:
+            sign_list.clear()
+            sign_list.extend(['nothing', 'nothing', 'nothing', 'nothing', 'nothing'])
+            if ros_data.data == "entry_forbidden":
+                rospy.loginfo("entry_forbidden detected")
+                sign_vel = 0.0
+            elif ros_data.data == "main_road":
+                rospy.loginfo("main road detected")
+                sign_vel = 0.11
+            elif ros_data.data == "turn_right":
+                rospy.loginfo("turn right detected")
+                sign_vel = 0.0
+            elif ros_data.data == "turn_left":
+                rospy.loginfo("turn left detected")
+                sign_vel = 0.0
+            elif ros_data.data == 'pedestrians':
+                rospy.loginfo("pedestrians detected")
+                sign_vel = 0.05
+            elif ros_data.data == "warning":
+                rospy.loginfo("warning detected")
+                sign_vel = 0.05
+            elif ros_data.data == "no_parking":
+                rospy.loginfo("no parking detected")
+                sign_vel = 0.0
+            elif ros_data.data == "bus_stop":
+                rospy.loginfo("bus stop detected")
+                sign_vel = 0.0
+            elif ros_data.data == "crossing":
+                rospy.loginfo("crossing detected")
+                sign_vel = 0.05
+            elif ros_data.data == "slippery":
+                rospy.loginfo("slippery detected")
+                sign_vel = 0.05
+            elif ros_data.data == "road_closed":
+                rospy.loginfo("road closed detected")
+                sign_vel = 0.0
+            else:
+                TRAFFIC_SIGN_DETECTED = False
+                sign_vel = last_velocity
 
         rospy.loginfo(ros_data.data)
         rospy.loginfo(sign_vel)
         return sign_vel
+
 
 # Main
 if __name__ == "__main__":
