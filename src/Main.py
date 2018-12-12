@@ -43,9 +43,6 @@ ANG_VEL_STEP_SIZE = 0.1
 LAST_LIN_VEL = 0.0
 LAST_ANG_VEL = 0.0
 
-TRAFFIC_SIGN_DETECTED = False
-last_velocity = 0.0
-
 sign_list = ['nothing', 'nothing', 'nothing', 'nothing', 'nothing']
 
 msg = """
@@ -106,6 +103,9 @@ def path_control():
 
 # Subscribe to traffic_sign & line_detect
 class burger_control:
+    last_velocity = 0.0
+    traffic_sign_detected = False
+
     def __init__(self):
         rospy.init_node('ControlTurtleBot', anonymous=False)
         self.cmd_vel = rospy.Publisher('cmd_vel', Twist)
@@ -116,10 +116,16 @@ class burger_control:
     # TODO Subscibe to line_detection
 
     def callback(self, ros_data):
-        # if ros_data != 'nothing':
-        # TODO Send velocity to turlebot3
         move_cmd = Twist()
-        move_cmd.linear.x = self.sign_controls(ros_data)
+        if self.traffic_sign_detected: # sign detected: do 'sign' for x seconds
+            for i in range(50):  # wait for 5 seconds
+                move_cmd.linear.x = self.last_velocity
+                move_cmd.angular.z = 0.0
+                self.cmd_vel.publish(move_cmd)
+            self.last_velocity = 0.11
+            move_cmd.linear.x = self.last_velocity
+        else:  # no traffic sign detected, do sign_controls
+            move_cmd.linear.x = self.sign_controls(ros_data)
         move_cmd.angular.z = 0.0
         self.cmd_vel.publish(move_cmd)
 
@@ -130,54 +136,55 @@ class burger_control:
     # traffic sign detected, do:
     def sign_controls(self, ros_data):
 
-        TRAFFIC_SIGN_DETECTED = True
         rospy.loginfo(ros_data.data)
 
-        sign_list.pop(0)
-        sign_list.append(ros_data)
-        if sign_list.count(ros_data) == 3:
-            sign_list.clear()
+        sign_list.pop(0)  # delete first item in sign_list
+        sign_list.append(ros_data)  # add latest item at the end
+
+        if sign_list.count(ros_data) == 3 and ros_data.data != 'nothing':
+
+            self.traffic_sign_detected = True
+
+            sign_list.clear()  # queue
             sign_list.extend(['nothing', 'nothing', 'nothing', 'nothing', 'nothing'])
+
             if ros_data.data == "entry_forbidden":
                 rospy.loginfo("entry_forbidden detected")
-                sign_vel = 0.0
+                self.last_velocity = 0.0
             elif ros_data.data == "main_road":
                 rospy.loginfo("main road detected")
-                sign_vel = 0.11
+                self.last_velocity = 0.11
             elif ros_data.data == "turn_right":
                 rospy.loginfo("turn right detected")
-                sign_vel = 0.0
+                self.last_velocity = 0.0
             elif ros_data.data == "turn_left":
                 rospy.loginfo("turn left detected")
-                sign_vel = 0.0
+                self.last_velocity = 0.0
             elif ros_data.data == 'pedestrians':
                 rospy.loginfo("pedestrians detected")
-                sign_vel = 0.05
+                self.last_velocity = 0.05
             elif ros_data.data == "warning":
                 rospy.loginfo("warning detected")
-                sign_vel = 0.05
+                self.last_velocity = 0.05
             elif ros_data.data == "no_parking":
                 rospy.loginfo("no parking detected")
-                sign_vel = 0.0
+                self.last_velocity = 0.0
             elif ros_data.data == "bus_stop":
                 rospy.loginfo("bus stop detected")
-                sign_vel = 0.0
+                self.last_velocity = 0.0
             elif ros_data.data == "crossing":
                 rospy.loginfo("crossing detected")
-                sign_vel = 0.05
+                self.last_velocity = 0.05
             elif ros_data.data == "slippery":
                 rospy.loginfo("slippery detected")
-                sign_vel = 0.05
+                self.last_velocity = 0.05
             elif ros_data.data == "road_closed":
                 rospy.loginfo("road closed detected")
-                sign_vel = 0.0
+                self.last_velocity = 0.0
             else:
-                TRAFFIC_SIGN_DETECTED = False
-                sign_vel = last_velocity
+                self.traffic_sign_detected = False
 
-        rospy.loginfo(ros_data.data)
-        rospy.loginfo(sign_vel)
-        return sign_vel
+        return self.last_velocity
 
 
 # Main
@@ -200,8 +207,7 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         stop_turtle = Twist()
         stop_turtle.linear.x = 0.0
-        stop_turtle.linear.y = 0.0
-        stop_turtle.linear.z = 0.0
+        stop_turtle.angular.z = 0.0
         # pub.publish(stop_turtle)
         rospy.loginfo("Shutting down")
         # TODO set velocity to zero
