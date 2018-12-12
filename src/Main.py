@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+# https://raw.githubusercontent.com/ROBOTIS-GIT/turtlebot3/master/turtlebot3_teleop/nodes/turtlebot3_teleop_key
+
 # Copyright (c) 2011, Willow Garage, Inc.
 # All rights reserved.
 #
@@ -54,18 +56,21 @@ Max. angular velocity: 2.84
 
 e = """Communications Failed"""
 
+
 def vels(target_linear_vel, target_angular_vel):
-    return "currently:\tlinear vel %s\t angular vel %s " % (target_linear_vel,target_angular_vel)
+    return "currently:\tlinear vel %s\t angular vel %s " % (target_linear_vel, target_angular_vel)
+
 
 def makeSimpleProfile(output, input, slop):
     if input > output:
-        output = min( input, output + slop )
+        output = min(input, output + slop)
     elif input < output:
-        output = max( input, output - slop )
+        output = max(input, output - slop)
     else:
         output = input
 
     return output
+
 
 # check velocity
 def constrain(input, low, high):
@@ -78,15 +83,18 @@ def constrain(input, low, high):
 
     return input
 
+
 # check linear velocity
 def checkLinearLimitVelocity(vel):
     vel = constrain(vel, -BURGER_MAX_LIN_VEL, BURGER_MAX_LIN_VEL)
     return vel
 
+
 # check angular velocity
 def checkAngularLimitVelocity(vel):
     vel = constrain(vel, -BURGER_MAX_ANG_VEL, BURGER_MAX_ANG_VEL)
     return vel
+
 
 # traffic sign detected, do:
 def sign_controls(ros_data):
@@ -95,38 +103,64 @@ def sign_controls(ros_data):
 
     # TODO change velocity (3 out of 5 hits)
 
-    if ros_data == 'entry forbidden':
+    if ros_data == "entry forbidden":
+        rospy.loginfo("entry_forbidden detected")
         sign_vel = 0.0
-    elif ros_data == 'main road':
+        rospy.loginfo("new velocity: ", sign_vel)
+    elif ros_data == "main road":
+        rospy.loginfo("main road detected")
         sign_vel = 0.11
-    elif ros_data == 'turn right':
+        rospy.loginfo("new velocity: ", sign_vel)
+    elif ros_data == "turn right":
+        rospy.loginfo("turn right detected")
         sign_vel = 0.0
-    elif ros_data == 'turn left':
+        rospy.loginfo("new velocity: ", sign_vel)
+    elif ros_data == "turn left":
+        rospy.loginfo("turn left detected")
         sign_vel = 0.0
-    elif ros_data == 'pedestrians':
+        rospy.loginfo("new velocity: ", sign_vel)
+    elif ros_data == "pedestrians":
+        rospy.loginfo("pedestrians detected")
         sign_vel = 0.05
-    elif ros_data == 'warning':
+        rospy.loginfo("new velocity: ", sign_vel)
+    elif ros_data == "warning":
+        rospy.loginfo("warning detected")
         sign_vel = 0.05
-    elif ros_data == 'no parking':
+        rospy.loginfo("new velocity: ", sign_vel)
+    elif ros_data == "no parking":
+        rospy.loginfo("no parking detected")
         sign_vel = 0.0
-    elif ros_data == 'bus stop':
+        rospy.loginfo("new velocity: ", sign_vel)
+    elif ros_data == "bus stop":
+        rospy.loginfo("bus stop detected")
         sign_vel = 0.0
-    elif ros_data == 'crossing':
+        rospy.loginfo("new velocity: ", sign_vel)
+    elif ros_data == "crossing":
+        rospy.loginfo("crossing detected")
         sign_vel = 0.05
-    elif ros_data == 'slippery':
+        rospy.loginfo("new velocity: ", sign_vel)
+    elif ros_data == "slippery":
+        rospy.loginfo("slippery detected")
         sign_vel = 0.05
-    elif ros_data == 'road closed':
+        rospy.loginfo("new velocity: ", sign_vel)
+    elif ros_data == "road closed":
+        rospy.loginfo("road closed detected")
         sign_vel = 0.0
+        rospy.loginfo("new velocity: ", sign_vel)
     else:
         TRAFFIC_SIGN_DETECTED = False
         sign_vel = last_velocity
 
+    rospy.loginfo(ros_data)
+    rospy.loginfo(sign_vel)
     return sign_vel
+
 
 #
 def path_control():
     path_ang = 0.0
     return path_ang
+
 
 # Subscribe to traffic_sign & line_detect
 class burger_control:
@@ -159,14 +193,14 @@ if __name__ == "__main__":
     turtlebot3_model = rospy.get_param("model", "burger")
 
     status = 0
-    target_linear_vel   = 0.0
-    target_angular_vel  = 0.0
-    control_linear_vel  = 0.0
+    target_linear_vel = 0.0
+    target_angular_vel = 0.0
+    control_linear_vel = 0.0
     control_angular_vel = 0.0
 
     control = burger_control()
 
-# Wait for callback: ( while(1) )
+    # Wait for callback: ( while(1) )
     try:
         rospy.spin()
     except KeyboardInterrupt:
