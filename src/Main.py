@@ -33,7 +33,6 @@ import rospy
 from geometry_msgs.msg import Twist
 import sys, select, termios, tty
 from std_msgs.msg import String, Int32
-import message_filters
 
 BURGER_MAX_LIN_VEL = 0.22
 BURGER_MAX_ANG_VEL = 2.84
@@ -118,18 +117,20 @@ class burger_control:
 
         # TODO returns number between 0 and 180 -> change to Burger format
         # Subscribe to lane_assist to get angular velocity
-        self.ros_data_angular = rospy.Subscriber("/lane_assist/detected", Int32, self.callback_angular)
-        rospy.loginfo("Subscribed to /lane_assist/detected")
+        # self.ros_data_angular = rospy.Subscriber("/lane_assist/detected", Int32, self.callback_angular)
+        # rospy.loginfo("Subscribed to /lane_assist/detected")
 
         rospy.spin()
 
     def callback_linear(self, ros_data_linear):
-        self.movement(self.sign_controls(ros_data_linear), 'linear')
+        self.movement(self.sign_controls(ros_data_linear), "linear")
 
     def callback_angular(self, ros_data_angular):
-        self.movement(self.lane_detection(ros_data_angular), 'angular')
+        self.movement(self.lane_detection(ros_data_angular), "angular")
 
     def movement(self, speed, kind):
+        rospy.loginfo('Movement aufgerufen')
+        rospy.loginfo(kind)
         move_cmd = Twist()
         # set new linear velocity and use last angular velocity
         if kind == 'linear':
@@ -137,14 +138,16 @@ class burger_control:
             move_cmd.angular.z = self.last_angular
             self.cmd_vel.publish(move_cmd)
             self.last_velocity = speed
+            rospy.loginfo('linear velocity changed')
         # set new angular velocity and use last linear velocity
         elif kind == 'angular':
             move_cmd.linear.x = self.last_velocity
             move_cmd.angular.z = speed
             self.cmd_vel.publish(move_cmd)
             self.last_angular = speed
+            rospy.loginfo('angular velocity changed')
 
-        rospy.loginfo(kind, speed)
+        rospy.loginfo(kind)
 
     # line detection, set angular velocity
     def lane_detection(self, ros_angular):
@@ -163,7 +166,7 @@ class burger_control:
 
         rospy.loginfo(ros_data.data)
 
-        if ros_data.data != 'nothing':
+        if ros_data.data != "nothing":
 
             if ros_data.data == "entry_forbidden":
                 rospy.loginfo("entry_forbidden detected")
