@@ -137,19 +137,15 @@ class burger_control:
             move_cmd.linear.x = speed
             move_cmd.angular.z = self.last_angular
             self.cmd_vel.publish(move_cmd)
-            self.last_velocity = speed
             rospy.loginfo('linear velocity changed')
         # set new angular velocity and use last linear velocity
         elif kind == 'angular':
             move_cmd.linear.x = self.last_velocity
             move_cmd.angular.z = speed
             self.cmd_vel.publish(move_cmd)
-            self.last_angular = speed
             rospy.loginfo('angular velocity changed')
 
-        rospy.loginfo(kind)
-
-    # line detection, set angular velocity
+    # lane detection, set angular velocity
     def lane_detection(self, ros_angular):
         rospy.loginfo(self, ros_angular.data)
         if ros_angular.data == 90:
@@ -202,6 +198,7 @@ class burger_control:
                 rospy.loginfo("road closed detected")
                 self.last_velocity = 0.0
 
+        rospy.loginfo(self.last_velocity)
         return self.last_velocity
 
 
