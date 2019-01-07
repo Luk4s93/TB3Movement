@@ -132,14 +132,14 @@ class burger_control:
             #    self.cmd_vel.publish(move_cmd)
 
             move_cmd.linear.x = self.last_velocity
-            move_cmd.angular.z = self.lane_detection(ros_data_angular)
+            move_cmd.angular.z = 0.0  # self.lane_detection(ros_data_angular)
             self.cmd_vel.publish(move_cmd)
 
             # self.last_velocity = 0.11
             # move_cmd.linear.x = self.last_velocity
         else:  # no traffic sign detected, do sign_controls
             move_cmd.linear.x = self.sign_controls(ros_data_linear)
-        move_cmd.angular.z = self.lane_detection(ros_data_angular)
+        move_cmd.angular.z = 0.0  # self.lane_detection(ros_data_angular)
         self.cmd_vel.publish(move_cmd)
 
         rospy.loginfo(ros_data_linear)
@@ -164,7 +164,7 @@ class burger_control:
         sign_list.pop(0)  # delete first item in sign_list
         sign_list.append(ros_data)  # add latest item at the end
 
-        if sign_list.count(ros_data) == 3 and ros_data.data != 'nothing':
+        if ros_data.data != 'nothing':  # sign_list.count(ros_data) == 3 and
 
             self.traffic_sign_detected = True
 
