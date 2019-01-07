@@ -112,37 +112,39 @@ class burger_control:
         rospy.init_node('ControlTurtleBot', anonymous=False)
         self.cmd_vel = rospy.Publisher('cmd_vel', Twist)
 
-        ros_data_linear = message_filters.Subscriber("/traffic_sign/detected", String)
+        # Subscribe to traffic_sign to get linear velocity
+        self.ros_data_linear = rospy.Subscriber("/traffic_sign/detected", String, self.callback_linear)
         rospy.loginfo("Subscribed to /traffic_sign/detected")
 
         # TODO returns number between 0 and 180 -> change to Burger format
-        ros_data_angular= message_filters.Subscriber("/lane_assist/detected", Int32)
+        # Subscribe to lane_assist to get angular velocity
+        self.ros_data_angular = rospy.Subscriber("/lane_assist/detected", Int32, self.callback_angular)
         rospy.loginfo("Subscribed to /lane_assist/detected")
 
-        ts = message_filters.TimeSynchronizer([ros_data_linear, ros_data_angular], 10)
-        ts.registerCallback(self.callback)
         rospy.spin()
 
-    def callback(self, ros_data_linear, ros_data_angular):
+    def callback_linear(self, ros_data_linear):
+        self.movement(self.sign_controls(ros_data_linear), 'linear')
+
+    def callback_angular(self, ros_data_angular):
+        self.movement(self.lane_detection(ros_data_angular), 'angular')
+
+    def movement(self, speed, kind):
         move_cmd = Twist()
-        if self.traffic_sign_detected:  # sign detected: do 'sign' for x seconds
-            # for i in range(50):  # wait for 5 seconds
-            #    move_cmd.linear.x = self.last_velocity
-            #    move_cmd.angular.z = self.line_detection(ros_data_angular)
-            #    self.cmd_vel.publish(move_cmd)
-
-            move_cmd.linear.x = self.last_velocity
-            move_cmd.angular.z = 0.0  # self.lane_detection(ros_data_angular)
+        # set new linear velocity and use last angular velocity
+        if kind == 'linear':
+            move_cmd.linear.x = speed
+            move_cmd.angular.z = self.last_angular
             self.cmd_vel.publish(move_cmd)
+            self.last_velocity = speed
+        # set new angular velocity and use last linear velocity
+        elif kind == 'angular':
+            move_cmd.linear.x = self.last_velocity
+            move_cmd.angular.z = speed
+            self.cmd_vel.publish(move_cmd)
+            self.last_angular = speed
 
-            # self.last_velocity = 0.11
-            # move_cmd.linear.x = self.last_velocity
-        else:  # no traffic sign detected, do sign_controls
-            move_cmd.linear.x = self.sign_controls(ros_data_linear)
-        move_cmd.angular.z = 0.0  # self.lane_detection(ros_data_angular)
-        self.cmd_vel.publish(move_cmd)
-
-        rospy.loginfo(ros_data_linear)
+        rospy.loginfo(kind, speed)
 
     # line detection, set angular velocity
     def lane_detection(self, ros_angular):
@@ -161,15 +163,7 @@ class burger_control:
 
         rospy.loginfo(ros_data.data)
 
-        sign_list.pop(0)  # delete first item in sign_list
-        sign_list.append(ros_data)  # add latest item at the end
-
-        if ros_data.data != 'nothing':  # sign_list.count(ros_data) == 3 and
-
-            self.traffic_sign_detected = True
-
-            sign_list.clear()  # queue
-            sign_list.extend(['nothing', 'nothing', 'nothing', 'nothing', 'nothing'])
+        if ros_data.data != 'nothing':
 
             if ros_data.data == "entry_forbidden":
                 rospy.loginfo("entry_forbidden detected")
@@ -204,8 +198,6 @@ class burger_control:
             elif ros_data.data == "road_closed":
                 rospy.loginfo("road closed detected")
                 self.last_velocity = 0.0
-            else:
-                self.traffic_sign_detected = False
 
         return self.last_velocity
 
