@@ -196,10 +196,10 @@ class burger_control:
 
     # shutdown function
     def roboter_shutdown(self):
-        move_cmd = Twist()
-        move_cmd.linear.x = 0
-        move_cmd.angular.z = 0
-        self.cmd_vel.publish(move_cmd)
+        twist = Twist()
+        twist.linear.x = 0
+        twist.angular.z = 0
+        self.cmd_vel.publish(twist)
         rospy.loginfo("Shutting down (__exit__)")
 
 
