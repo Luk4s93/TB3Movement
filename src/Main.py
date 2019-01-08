@@ -103,6 +103,7 @@ class burger_control:
     last_angular = 0
     traffic_sign_detected = False
 
+    # initialize
     def __init__(self):
         rospy.init_node('ControlTurtleBot', anonymous=False)
         self.cmd_vel = rospy.Publisher('cmd_vel', Twist)
@@ -125,27 +126,25 @@ class burger_control:
         self.movement(self.lane_detection(ros_data_angular), "angular")
 
     def movement(self, speed, kind):
-        rospy.loginfo('Movement aufgerufen')
-        rospy.loginfo("kind: " + kind)
         move_cmd = Twist()
         # set new linear velocity and use last angular velocity
         if kind == 'linear':
             move_cmd.linear.x = speed
             move_cmd.angular.z = self.last_angular
             self.cmd_vel.publish(move_cmd)
-            rospy.loginfo('linear velocity changed')
+            rospy.loginfo('linear velocity changed to: ' + String(self.last_velocity))
         # set new angular velocity and use last linear velocity
         elif kind == 'angular':
             move_cmd.linear.x = self.last_velocity
             move_cmd.angular.z = speed
             self.cmd_vel.publish(move_cmd)
-            rospy.loginfo('angular velocity changed')
+            rospy.loginfo('angular velocity changed to: ' + self.last_angular)
 
     # lane detection, set angular velocity
     def lane_detection(self, ros_angular):
         rospy.loginfo(self, ros_angular.data)
         if ros_angular.data == 90:
-            self.last_angular = 0.0
+            self.last_angular = 0
         elif ros_angular < 90:
             self.last_angular = ros_angular.data/180 * (-2.84)
         elif ros_angular.data > 90:
@@ -156,46 +155,51 @@ class burger_control:
     # traffic sign detected, do:
     def sign_controls(self, ros_data):
 
-        rospy.loginfo("sign_controls: " + ros_data.data)
-
         if "nothing" not in ros_data.data:
 
             if "entry_forbidden" in ros_data.data:
-                rospy.loginfo("entry_forbidden detected")
+                # rospy.loginfo("entry_forbidden detected")
                 self.last_velocity = 0.0
             elif "main_road" in ros_data.data:
-                rospy.loginfo("main road detected")
+                # rospy.loginfo("main road detected")
                 self.last_velocity = 0.11
             elif "turn_right" in ros_data.data:
-                rospy.loginfo("turn right detected")
+                # rospy.loginfo("turn right detected")
                 self.last_velocity = 0.0
             elif "turn_left" in ros_data.data:
-                rospy.loginfo("turn left detected")
+                # rospy.loginfo("turn left detected")
                 self.last_velocity = 0.0
             elif "pedestrians" in ros_data.data:
-                rospy.loginfo("pedestrians detected")
+                # rospy.loginfo("pedestrians detected")
                 self.last_velocity = 0.05
             elif "warning" in ros_data.data:
-                rospy.loginfo("warning detected")
+                # rospy.loginfo("warning detected")
                 self.last_velocity = 0.05
             elif "no_parking" in ros_data.data:
-                rospy.loginfo("no parking detected")
+                # rospy.loginfo("no parking detected")
                 self.last_velocity = 0.0
             elif "bus_stop" in ros_data.data:
-                rospy.loginfo("bus stop detected")
+                # rospy.loginfo("bus stop detected")
                 self.last_velocity = 0.0
             elif "crossing" in ros_data.data:
-                rospy.loginfo("crossing detected")
+                # rospy.loginfo("crossing detected")
                 self.last_velocity = 0.05
             elif "slippery" in ros_data.data:
-                rospy.loginfo("slippery detected")
+                # rospy.loginfo("slippery detected")
                 self.last_velocity = 0.05
             elif "road_closed" in ros_data.data:
-                rospy.loginfo("road closed detected")
+                # rospy.loginfo("road closed detected")
                 self.last_velocity = 0.0
 
-        rospy.loginfo(self.last_velocity)
         return self.last_velocity
+
+    # shutdown function
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        move_cmd = Twist()
+        move_cmd.linear.x = 0
+        move_cmd.angular.z = 0
+        self.cmd_vel.publish(move_cmd)
+        rospy.loginfo("Shutting down (__exit__)")
 
 
 # Main
@@ -219,6 +223,6 @@ if __name__ == "__main__":
         stop_turtle.linear.x = 0.0
         stop_turtle.angular.z = 0.0
         pub.publish(stop_turtle)
-        rospy.loginfo("Shutting down")
+        rospy.loginfo("Shutting down (try/catch)")
 
     termios.tcsetattr(sys.stdin, termios.TCSADRAIN, settings)
