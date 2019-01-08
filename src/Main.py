@@ -195,7 +195,7 @@ class burger_control:
         return self.last_velocity
 
     # shutdown function
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def roboter_shutdown(self):
         move_cmd = Twist()
         move_cmd.linear.x = 0
         move_cmd.angular.z = 0
@@ -215,15 +215,13 @@ if __name__ == "__main__":
     control_linear_vel = 0.0
     control_angular_vel = 0.0
 
+    control = burger_control()  # start turtlebot movement
+
     try:
-        control = burger_control()  # start turtlebot movement
         rospy.spin()
+    except:
+        rospy.loginfo("Something went wrong - turtle shutdown")
     finally:
-        pub = rospy.Publisher('cmd_vel', Twist)
-        stop_turtle = Twist()
-        stop_turtle.linear.x = 0.0
-        stop_turtle.angular.z = 0.0
-        pub.publish(stop_turtle)
-        rospy.loginfo("Shutting down (try/catch)")
+        control.roboter_shutdown()
 
     termios.tcsetattr(sys.stdin, termios.TCSADRAIN, settings)
