@@ -56,10 +56,6 @@ Max. angular velocity: 2.84
 e = """Communications Failed"""
 
 
-def vels(target_linear_vel, target_angular_vel):
-    return "currently:\tlinear vel %s\t angular vel %s " % (target_linear_vel, target_angular_vel)
-
-
 def makeSimpleProfile(output, input, slop):
     if input > output:
         output = min(input, output + slop)
@@ -130,7 +126,7 @@ class burger_control:
 
     def movement(self, speed, kind):
         rospy.loginfo('Movement aufgerufen')
-        rospy.loginfo(kind)
+        rospy.loginfo("kind: " + kind)
         move_cmd = Twist()
         # set new linear velocity and use last angular velocity
         if kind == 'linear':
@@ -160,41 +156,41 @@ class burger_control:
     # traffic sign detected, do:
     def sign_controls(self, ros_data):
 
-        rospy.loginfo(ros_data.data)
+        rospy.loginfo("sign_controls: " + ros_data.data)
 
-        if ros_data.data != "nothing":
+        if "nothing" not in ros_data.data:
 
-            if ros_data.data == "entry_forbidden":
+            if "entry_forbidden" in ros_data.data:
                 rospy.loginfo("entry_forbidden detected")
                 self.last_velocity = 0.0
-            elif ros_data.data == "main_road":
+            elif "main_road" in ros_data.data:
                 rospy.loginfo("main road detected")
                 self.last_velocity = 0.11
-            elif ros_data.data == "turn_right":
+            elif "turn_right" in ros_data.data:
                 rospy.loginfo("turn right detected")
                 self.last_velocity = 0.0
-            elif ros_data.data == "turn_left":
+            elif "turn_left" in ros_data.data:
                 rospy.loginfo("turn left detected")
                 self.last_velocity = 0.0
-            elif ros_data.data == 'pedestrians':
+            elif "pedestrians" in ros_data.data:
                 rospy.loginfo("pedestrians detected")
                 self.last_velocity = 0.05
-            elif ros_data.data == "warning":
+            elif "warning" in ros_data.data:
                 rospy.loginfo("warning detected")
                 self.last_velocity = 0.05
-            elif ros_data.data == "no_parking":
+            elif "no_parking" in ros_data.data:
                 rospy.loginfo("no parking detected")
                 self.last_velocity = 0.0
-            elif ros_data.data == "bus_stop":
+            elif "bus_stop" in ros_data.data:
                 rospy.loginfo("bus stop detected")
                 self.last_velocity = 0.0
-            elif ros_data.data == "crossing":
+            elif "crossing" in ros_data.data:
                 rospy.loginfo("crossing detected")
                 self.last_velocity = 0.05
-            elif ros_data.data == "slippery":
+            elif "slippery" in ros_data.data:
                 rospy.loginfo("slippery detected")
                 self.last_velocity = 0.05
-            elif ros_data.data == "road_closed":
+            elif "road_closed" in ros_data.data:
                 rospy.loginfo("road closed detected")
                 self.last_velocity = 0.0
 
@@ -214,19 +210,9 @@ if __name__ == "__main__":
     control_linear_vel = 0.0
     control_angular_vel = 0.0
 
-    control = burger_control()
-
-    # Wait for callback: ( while(1) )
     try:
+        control = burger_control()  # start turtlebot movement
         rospy.spin()
-    except KeyboardInterrupt:
-        pub = rospy.Publisher('cmd_vel', Twist)
-        stop_turtle = Twist()
-        stop_turtle.linear.x = 0.0
-        stop_turtle.angular.z = 0.0
-        pub.publish(stop_turtle)
-        rospy.loginfo("Shutting down")
-        # TODO set velocity to zero
     finally:
         pub = rospy.Publisher('cmd_vel', Twist)
         stop_turtle = Twist()
@@ -234,58 +220,5 @@ if __name__ == "__main__":
         stop_turtle.angular.z = 0.0
         pub.publish(stop_turtle)
         rospy.loginfo("Shutting down")
-    '''try:
-        print msg
-        while(1):
-            key = getKey()
-            if key == 'w' :
-                target_linear_vel = checkLinearLimitVelocity(target_linear_vel + LIN_VEL_STEP_SIZE)
-                status = status + 1
-                print vels(target_linear_vel,target_angular_vel)
-            elif key == 'x' :
-                target_linear_vel = checkLinearLimitVelocity(target_linear_vel - LIN_VEL_STEP_SIZE)
-                status = status + 1
-                print vels(target_linear_vel,target_angular_vel)
-            elif key == 'a' :
-                target_angular_vel = checkAngularLimitVelocity(target_angular_vel + ANG_VEL_STEP_SIZE)
-                status = status + 1
-                print vels(target_linear_vel,target_angular_vel)
-            elif key == 'd' :
-                target_angular_vel = checkAngularLimitVelocity(target_angular_vel - ANG_VEL_STEP_SIZE)
-                status = status + 1
-                print vels(target_linear_vel,target_angular_vel)
-            elif key == ' ' or key == 's' :
-                target_linear_vel   = 0.0
-                control_linear_vel  = 0.0
-                target_angular_vel  = 0.0
-                control_angular_vel = 0.0
-                print vels(target_linear_vel, target_angular_vel)
-            else:
-                if (key == '\x03'):
-                    break
-
-            if status == 20 :
-                print msg
-                status = 0
-
-            twist = Twist()
-
-            control_linear_vel = makeSimpleProfile(control_linear_vel, target_linear_vel, (LIN_VEL_STEP_SIZE/2.0))
-            twist.linear.x = control_linear_vel; twist.linear.y = 0.0; twist.linear.z = 0.0
-
-            control_angular_vel = makeSimpleProfile(control_angular_vel, target_angular_vel, (ANG_VEL_STEP_SIZE/2.0))
-            twist.angular.x = 0.0; twist.angular.y = 0.0; twist.angular.z = control_angular_vel
-
-            pub.publish(twist)
-
-    except:
-        print e
-
-    finally:
-        twist = Twist()
-        twist.linear.x = 0.0; twist.linear.y = 0.0; twist.linear.z = 0.0
-        twist.angular.x = 0.0; twist.angular.y = 0.0; twist.angular.z = 0.0
-        pub.publish(twist)
-    '''
 
     termios.tcsetattr(sys.stdin, termios.TCSADRAIN, settings)
