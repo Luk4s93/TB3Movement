@@ -143,7 +143,7 @@ class burger_control:
 
     # lane detection, set angular velocity
     def lane_detection(self, ros_angular):
-        value = ros_angular.data
+        value = ros_angular
         rospy.loginfo(self, value)
         if value == -1:  # -1 -> No lane detected
             rospy.loginfo('no lane detected')
