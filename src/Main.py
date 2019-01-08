@@ -112,7 +112,7 @@ class burger_control:
         self.cmd_vel = rospy.Publisher('cmd_vel', Twist)
 
         # Subscribe to traffic_sign to get linear velocity
-        self.ros_data_linear = rospy.Subscriber("/traffic_sign/detected", String, self.callback_linear)
+        self.ros_data_linear = rospy.Subscriber("/traffic_sign/detected", String, self.callback)
         rospy.loginfo("Subscribed to /traffic_sign/detected")
 
         # TODO returns number between 0 and 180 -> change to Burger format
@@ -122,7 +122,7 @@ class burger_control:
 
         rospy.spin()
 
-    def callback_linear(self, ros_data_linear):
+    def callback(self, ros_data_linear):
         move_cmd = Twist()
         move_cmd.linear.x = 0.1
         move_cmd.angular.z = 0.0
