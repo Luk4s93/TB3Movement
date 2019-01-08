@@ -120,8 +120,7 @@ class burger_control:
         rospy.spin()
 
     def callback_linear(self, ros_data_linear):
-        rospy.loginfo()
-        # self.movement(self.sign_controls(ros_data_linear), "linear")
+        self.movement(self.sign_controls(ros_data_linear), "linear")
 
     def callback_angular(self, ros_data_angular):
         self.movement(self.lane_detection(ros_data_angular), "angular")
