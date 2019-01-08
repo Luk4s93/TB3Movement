@@ -114,13 +114,14 @@ class burger_control:
 
         # TODO returns number between 0 and 180 -> change to Burger format
         # Subscribe to lane_assist to get angular velocity
-        # self.ros_data_angular = rospy.Subscriber("/lane_assist/detected", Int32, self.callback_angular)
-        # rospy.loginfo("Subscribed to /lane_assist/detected")
+        self.ros_data_angular = rospy.Subscriber("/lane_assist/detected", Int32, self.callback_angular)
+        rospy.loginfo("Subscribed to /lane_assist/detected")
 
         rospy.spin()
 
     def callback_linear(self, ros_data_linear):
-        self.movement(self.sign_controls(ros_data_linear), "linear")
+        rospy.loginfo()
+        # self.movement(self.sign_controls(ros_data_linear), "linear")
 
     def callback_angular(self, ros_data_angular):
         self.movement(self.lane_detection(ros_data_angular), "angular")
@@ -195,6 +196,7 @@ class burger_control:
         return self.last_velocity
 
     # shutdown function
+    # TODO Fixme (shutdown)
     def roboter_shutdown(self):
         twist = Twist()
         twist.linear.x = 0
