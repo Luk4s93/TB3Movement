@@ -132,7 +132,8 @@ class burger_control:
             move_cmd.linear.x = speed
             move_cmd.angular.z = self.last_angular
             self.cmd_vel.publish(move_cmd)
-            rospy.loginfo('linear velocity changed to: ' + String(self.last_velocity))
+            rospy.loginfo('linear velocity changed to:')
+            rospy.loginfo(self.last_velocity)
         # set new angular velocity and use last linear velocity
         elif kind == 'angular':
             move_cmd.linear.x = self.last_velocity
