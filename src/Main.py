@@ -112,7 +112,7 @@ class burger_control:
         self.cmd_vel = rospy.Publisher('cmd_vel', Twist)
 
         # Subscribe to traffic_sign to get linear velocity
-        self.ros_data_linear = rospy.Subscriber("/traffic_sign/detected", String, self.callback)
+        self.ros_data_linear = rospy.Subscriber("/traffic_sign/detected", String, self.callback_linear)
         rospy.loginfo("Subscribed to /traffic_sign/detected")
 
         # TODO returns number between 0 and 180 -> change to Burger format
@@ -122,12 +122,8 @@ class burger_control:
 
         rospy.spin()
 
-    def callback(self, ros_data_linear):
-        move_cmd = Twist()
-        move_cmd.linear.x = 0.1
-        move_cmd.angular.z = 0.0
-        self.cmd_vel.publish(move_cmd)
-        # self.movement(self.sign_controls(ros_data_linear), "linear")
+    def callback_linear(self, ros_data_linear):
+        self.movement(self.sign_controls(ros_data_linear), "linear")
 
     def callback_angular(self, ros_data_angular):
         self.movement(self.lane_detection(ros_data_angular), "angular")
@@ -135,18 +131,19 @@ class burger_control:
     def movement(self, speed, kind):
         rospy.loginfo('Movement aufgerufen')
         rospy.loginfo(kind)
+        move_cmd = Twist()
         # set new linear velocity and use last angular velocity
-        # if kind == 'linear':
-        #     move_cmd.linear.x = 0.1
-        #     move_cmd.angular.z = 0.0
-        #     self.cmd_vel.publish(move_cmd)
-        #     rospy.loginfo('linear velocity changed')
-        # # set new angular velocity and use last linear velocity
-        # elif kind == 'angular':
-        #     move_cmd.linear.x = self.last_velocity
-        #     move_cmd.angular.z = speed
-        #     self.cmd_vel.publish(move_cmd)
-        #     rospy.loginfo('angular velocity changed')
+        if kind == 'linear':
+            move_cmd.linear.x = speed
+            move_cmd.angular.z = self.last_angular
+            self.cmd_vel.publish(move_cmd)
+            rospy.loginfo('linear velocity changed')
+        # set new angular velocity and use last linear velocity
+        elif kind == 'angular':
+            move_cmd.linear.x = self.last_velocity
+            move_cmd.angular.z = speed
+            self.cmd_vel.publish(move_cmd)
+            rospy.loginfo('angular velocity changed')
 
     # lane detection, set angular velocity
     def lane_detection(self, ros_angular):
@@ -223,13 +220,20 @@ if __name__ == "__main__":
     try:
         rospy.spin()
     except KeyboardInterrupt:
+        pub = rospy.Publisher('cmd_vel', Twist)
         stop_turtle = Twist()
         stop_turtle.linear.x = 0.0
         stop_turtle.angular.z = 0.0
-        # pub.publish(stop_turtle)
+        pub.publish(stop_turtle)
         rospy.loginfo("Shutting down")
         # TODO set velocity to zero
-
+    finally:
+        pub = rospy.Publisher('cmd_vel', Twist)
+        stop_turtle = Twist()
+        stop_turtle.linear.x = 0.0
+        stop_turtle.angular.z = 0.0
+        pub.publish(stop_turtle)
+        rospy.loginfo("Shutting down")
     '''try:
         print msg
         while(1):
