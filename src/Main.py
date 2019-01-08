@@ -143,17 +143,15 @@ class burger_control:
 
     # lane detection, set angular velocity
     def lane_detection(self, ros_angular):
-        value = int(ros_angular.data)
+        value = ros_angular.data
         rospy.loginfo(self, value)
-        if value == -1:
+        if value == -1:  # -1 -> No lane detected
             rospy.loginfo('no lane detected')
             self.last_angular = 0
-        elif value == 90:
+        elif value == 90:  # 90 -> straight ahead
             self.last_angular = 0
-        elif value < 90:
-            self.last_angular = value/180 * (-2.84)
-        elif value > 90:
-            self.last_angular = value/180 * 2.84
+        else:  # turn left/right (conversion to ROS-expected values)
+            self.last_angular = (value - 90) / 90 * 2.84
 
         return self.last_angular
 
