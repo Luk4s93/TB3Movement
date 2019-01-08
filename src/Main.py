@@ -123,7 +123,11 @@ class burger_control:
         rospy.spin()
 
     def callback_linear(self, ros_data_linear):
-        self.movement(self.sign_controls(ros_data_linear), "linear")
+        move_cmd = Twist()
+        move_cmd.linear.x = 0.1
+        move_cmd.angular.z = 0.0
+        self.cmd_vel.publish(move_cmd)
+        # self.movement(self.sign_controls(ros_data_linear), "linear")
 
     def callback_angular(self, ros_data_angular):
         self.movement(self.lane_detection(ros_data_angular), "angular")
@@ -131,10 +135,6 @@ class burger_control:
     def movement(self, speed, kind):
         rospy.loginfo('Movement aufgerufen')
         rospy.loginfo(kind)
-        move_cmd = Twist()
-        move_cmd.linear.x = 0.1
-        move_cmd.angular.z = 0.0
-        self.cmd_vel.publish(move_cmd)
         # set new linear velocity and use last angular velocity
         # if kind == 'linear':
         #     move_cmd.linear.x = 0.1
