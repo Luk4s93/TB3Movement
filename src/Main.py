@@ -123,7 +123,7 @@ class burger_control:
         self.movement(self.sign_controls(ros_data_linear), "linear")
 
     def callback_angular(self, ros_data_angular):
-        self.movement(self.lane_detection(ros_data_angular.data), "angular")
+        self.movement(self.lane_detection(ros_data_angular), "angular")
 
     def movement(self, speed, kind):
         move_cmd = Twist()
@@ -139,20 +139,21 @@ class burger_control:
             move_cmd.linear.x = self.last_velocity
             move_cmd.angular.z = speed
             self.cmd_vel.publish(move_cmd)
-            rospy.loginfo('angular velocity changed to: ' + self.last_angular)
+            rospy.loginfo(self.last_angular)
 
     # lane detection, set angular velocity
     def lane_detection(self, ros_angular):
-        rospy.loginfo(self, ros_angular)
-        if ros_angular == -1:
+        value = int(ros_angular.data)
+        rospy.loginfo(self, value)
+        if value == -1:
             rospy.loginfo('no lane detected')
             self.last_angular = 0
-        elif ros_angular == 90:
+        elif value == 90:
             self.last_angular = 0
-        elif ros_angular < 90:
-            self.last_angular = ros_angular/180 * (-2.84)
-        elif ros_angular > 90:
-            self.last_angular = ros_angular/180 * 2.84
+        elif value < 90:
+            self.last_angular = value/180 * (-2.84)
+        elif value > 90:
+            self.last_angular = value/180 * 2.84
 
         return self.last_angular
 
