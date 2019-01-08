@@ -103,8 +103,8 @@ def path_control():
 
 # Subscribe to traffic_sign & line_detect
 class burger_control:
-    last_velocity = 0.0
-    last_angular = 0.0
+    last_velocity = 0
+    last_angular = 0
     traffic_sign_detected = False
 
     def __init__(self):
@@ -134,8 +134,8 @@ class burger_control:
         move_cmd = Twist()
         # set new linear velocity and use last angular velocity
         if kind == 'linear':
-            move_cmd.linear.x = speed
-            move_cmd.angular.z = self.last_angular
+            move_cmd.linear.x = 0.1
+            move_cmd.angular.z = 0.0
             self.cmd_vel.publish(move_cmd)
             rospy.loginfo('linear velocity changed')
         # set new angular velocity and use last linear velocity
