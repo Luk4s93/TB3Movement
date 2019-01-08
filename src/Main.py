@@ -116,7 +116,6 @@ class burger_control:
         # Subscribe to lane_assist to get angular velocity
         self.ros_data_angular = rospy.Subscriber("/lane_assist/detected", Int32, self.callback_angular)
         rospy.loginfo("Subscribed to /lane_assist/detected")
-        rospy.loginfo(self.ros_data_angular)
 
         rospy.spin()
 
@@ -124,7 +123,7 @@ class burger_control:
         self.movement(self.sign_controls(ros_data_linear), "linear")
 
     def callback_angular(self, ros_data_angular):
-        rospy.loginfo(':(')
+        rospy.loginfo(ros_data_angular)
         # self.movement(self.lane_detection(ros_data_angular), "angular")
 
     def movement(self, speed, kind):
