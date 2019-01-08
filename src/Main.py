@@ -132,18 +132,21 @@ class burger_control:
         rospy.loginfo('Movement aufgerufen')
         rospy.loginfo(kind)
         move_cmd = Twist()
+        move_cmd.linear.x = 0.1
+        move_cmd.angular.z = 0.0
+        self.cmd_vel.publish(move_cmd)
         # set new linear velocity and use last angular velocity
-        if kind == 'linear':
-            move_cmd.linear.x = 0.1
-            move_cmd.angular.z = 0.0
-            self.cmd_vel.publish(move_cmd)
-            rospy.loginfo('linear velocity changed')
-        # set new angular velocity and use last linear velocity
-        elif kind == 'angular':
-            move_cmd.linear.x = self.last_velocity
-            move_cmd.angular.z = speed
-            self.cmd_vel.publish(move_cmd)
-            rospy.loginfo('angular velocity changed')
+        # if kind == 'linear':
+        #     move_cmd.linear.x = 0.1
+        #     move_cmd.angular.z = 0.0
+        #     self.cmd_vel.publish(move_cmd)
+        #     rospy.loginfo('linear velocity changed')
+        # # set new angular velocity and use last linear velocity
+        # elif kind == 'angular':
+        #     move_cmd.linear.x = self.last_velocity
+        #     move_cmd.angular.z = speed
+        #     self.cmd_vel.publish(move_cmd)
+        #     rospy.loginfo('angular velocity changed')
 
     # lane detection, set angular velocity
     def lane_detection(self, ros_angular):
